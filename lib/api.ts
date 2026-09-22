@@ -41,7 +41,7 @@ export class ApiRequestError extends Error {
 }
 
 export const api = axios.create({
-  baseURL: process.env.NEXT_PUBLIC_API_URL,
+  baseURL: `${process.env.NEXT_PUBLIC_API_URL}/api`,
   headers: {
     "Content-Type": "application/json",
   },
@@ -80,7 +80,7 @@ api.interceptors.response.use(
 );
 
 export async function logout(): Promise<void> {
-  await api.post<BackendEnvelope<{ message: string }>>("/api/auth/logout");
+  await api.post<BackendEnvelope<{ message: string }>>("/auth/logout");
 }
 
 export async function getGallery(): Promise<ApiGallery> {
