@@ -1,36 +1,83 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Gallery Manager
 
-## Getting Started
+Frontend for Gallery Manager — a web app for art galleries to manage their
+collection and publish a public gallery page.
 
-First, run the development server:
+## Stack
+
+- [Next.js 15](https://nextjs.org/docs) (App Router)
+- TypeScript
+- Tailwind CSS v4
+- [SWR](https://swr.vercel.app/) for client-side data fetching
+- [React Hook Form](https://react-hook-form.com/) + [Zod](https://zod.dev/) for forms and validation
+- [Axios](https://axios-http.com/) as the HTTP client
+- [NextAuth.js](https://next-auth.js.org/) for authentication
+
+## Getting started
+
+Install dependencies:
+
+```bash
+npm install
+```
+
+Copy the example environment file and fill in real values:
+
+```bash
+cp .env.example .env.local
+```
+
+Run the dev server:
 
 ```bash
 npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+Open [http://localhost:3000](http://localhost:3000).
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+## Project structure
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+```
+app/
+  (auth)/              Route group for login/signup, no shared layout segment
+    login/
+    signup/
+  dashboard/            Authenticated area
+    gallery/
+      settings/         Gallery profile settings
+      artworks/
+        new/             Create artwork
+        [id]/edit/        Edit artwork
+  gallery/[slug]/        Public gallery page
+  layout.tsx             Root layout (Header/Footer)
+  page.tsx                Landing page
 
-## Learn More
+components/
+  auth/                  LoginForm, SignupForm
+  gallery/               GalleryGrid, ArtworkCard
+  ui/                    Header, Navigation, Footer
 
-To learn more about Next.js, take a look at the following resources:
+lib/
+  api.ts                 Axios instance with auth header injection
+  auth.ts                 NextAuth configuration
+  validation.ts           Zod schemas shared by forms
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+types/
+  index.ts                Domain types (User, Gallery, Artwork, ...)
+```
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+## Environment variables
 
-## Deploy on Vercel
+See [.env.example](./.env.example) for the full list. At minimum you need:
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+- `API_URL` — backend API base URL, used server-side
+- `NEXT_PUBLIC_API_URL` — backend API base URL, used in the browser
+- `NEXTAUTH_SECRET` — random secret used to sign session tokens
+- `NEXTAUTH_URL` — the canonical URL of this app
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+## Scripts
+
+- `npm run dev` — start the dev server (Turbopack)
+- `npm run build` — production build
+- `npm run start` — run the production build
+- `npm run lint` — run ESLint
