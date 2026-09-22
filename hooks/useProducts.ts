@@ -20,7 +20,7 @@ export function useProducts({ galleryId, category }: UseProductsOptions = {}) {
       setIsLoading(true);
       setError(null);
       const response = await api.get<{ success: boolean; data: ApiProduct[] }>(
-        `/api/galleries/${galleryId}/products`,
+        `/galleries/${galleryId}/products`,
         { params: { ...(category && { category }) } }
       );
       setProducts(response.data.data || []);
@@ -41,7 +41,7 @@ export function useProducts({ galleryId, category }: UseProductsOptions = {}) {
       if (!galleryId) throw new Error("Gallery not found");
       try {
         const response = await api.post<{ success: boolean; data: ApiProduct }>(
-          `/api/galleries/${galleryId}/products`,
+          `/galleries/${galleryId}/products`,
           input
         );
         const newProduct = response.data.data;
@@ -59,7 +59,7 @@ export function useProducts({ galleryId, category }: UseProductsOptions = {}) {
       if (!galleryId) throw new Error("Gallery not found");
       try {
         const response = await api.put<{ success: boolean; data: ApiProduct }>(
-          `/api/galleries/${galleryId}/products/${productId}`,
+          `/galleries/${galleryId}/products/${productId}`,
           input
         );
         const updated = response.data.data;
@@ -76,7 +76,7 @@ export function useProducts({ galleryId, category }: UseProductsOptions = {}) {
     async (productId: string) => {
       if (!galleryId) throw new Error("Gallery not found");
       try {
-        await api.delete(`/api/galleries/${galleryId}/products/${productId}`);
+        await api.delete(`/galleries/${galleryId}/products/${productId}`);
         setProducts((prev) => prev.filter((p) => p.id !== productId));
       } catch (err) {
         throw err instanceof Error ? err : new Error("Failed to delete product");
