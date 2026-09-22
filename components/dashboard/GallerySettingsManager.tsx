@@ -6,6 +6,7 @@ import { useArtworks } from "@/hooks/useArtworks";
 import Tabs from "@/components/Tabs";
 import GalleryInfo from "@/components/dashboard/GalleryInfo";
 import GalleryAboutUs from "@/components/dashboard/GalleryAboutUs";
+import GalleryArtistsSettings from "@/components/dashboard/GalleryArtistsSettings";
 import GalleryBrandingSettings from "@/components/dashboard/gallery-settings/GalleryBrandingSettings";
 import GalleryExtendedSettings from "@/components/dashboard/gallery-settings/GalleryExtendedSettings";
 import GalleryHomeSettings from "@/components/dashboard/gallery-settings/GalleryHomeSettings";
@@ -81,9 +82,7 @@ export default function GallerySettingsManager({ slug }: GallerySettingsManagerP
                         }}
                       />
                     )}
-                    {activePage === "artists" && (
-                      <p className="text-sm text-gray-500">Artists page settings coming soon</p>
-                    )}
+                    {activePage === "artists" && <GalleryArtistsSettings gallery={gallery} />}
                     {activePage === "artworks" && (
                       <p className="text-sm text-gray-500">Artworks page settings coming soon</p>
                     )}

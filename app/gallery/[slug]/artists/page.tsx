@@ -13,18 +13,26 @@ interface BackendEnvelope<T> {
   data: T;
 }
 
+interface ArtistsPageResponse {
+  artists: ApiArtist[];
+  total: number;
+  pages: number;
+}
+
 async function getPublicArtistsPageData(
   slug: string
 ): Promise<{ artists: ApiArtist[]; backgroundImageUrl: string | null } | null> {
   try {
     const [artistsRes, artworksRes] = await Promise.all([
-      api.get<BackendEnvelope<ApiArtist[]>>(`/public/galleries/${slug}/artists`),
+      api.get<BackendEnvelope<ArtistsPageResponse>>(`/public/galleries/${slug}/artists`, {
+        params: { page: 1, limit: 12 },
+      }),
       api.get<BackendEnvelope<ArtworksPage>>(`/public/galleries/${slug}/artworks`, {
         params: { limit: 1 },
       }),
     ]);
     return {
-      artists: artistsRes.data.data,
+      artists: artistsRes.data.data.artists,
       backgroundImageUrl: artworksRes.data.data.artworks[0]?.imageUrl ?? null,
     };
   } catch {

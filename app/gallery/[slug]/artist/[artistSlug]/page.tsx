@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import ArtistDetailView from "@/components/gallery-public/ArtistDetailView";
 import { api } from "@/lib/api";
-import type { ApiArtist, ArtistDetail } from "@/lib/types/models";
+import type { ArtistDetail } from "@/lib/types/models";
 
 interface ArtistDetailPageProps {
   params: Promise<{ slug: string; artistSlug: string }>;
@@ -13,23 +13,12 @@ interface BackendEnvelope<T> {
   data: T;
 }
 
-/**
- * No public single-artist endpoint exists (by id or slug — both 404,
- * confirmed live). So: resolve the slug to an id via the public gallery
- * artists list, then fetch the full record from GET /api/artists/:id —
- * which, also confirmed live, works with no auth token at all despite not
- * living under /public/.
- */
 async function getPublicArtist(slug: string, artistSlug: string): Promise<ArtistDetail | null> {
   try {
-    const listRes = await api.get<BackendEnvelope<ApiArtist[]>>(
-      `/public/galleries/${slug}/artists`
+    const res = await api.get<BackendEnvelope<ArtistDetail>>(
+      `/public/galleries/${slug}/artists/${artistSlug}`
     );
-    const match = listRes.data.data.find((a) => a.slug === artistSlug);
-    if (!match) return null;
-
-    const detailRes = await api.get<BackendEnvelope<ArtistDetail>>(`/artists/${match.id}`);
-    return detailRes.data.data;
+    return res.data.data;
   } catch {
     return null;
   }
