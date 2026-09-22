@@ -190,3 +190,17 @@ export const galleryExtendedSettingsSchema = z.object({
 });
 
 export type GalleryExtendedSettingsFormValues = z.infer<typeof galleryExtendedSettingsSchema>;
+
+// Product Management
+export const productSchema = z.object({
+  title: z.string().min(1, "Product name is required").max(255),
+  description: z.string().max(1000, "Description is too long").optional().or(z.literal("")),
+  imageUrl: z.string().url("Enter a valid image URL"),
+  price: z.coerce.number().positive("Price must be greater than 0"),
+  category: z.enum(["print", "photo", "illustration", "merchandise"]),
+  stock: z.coerce.number().int("Stock must be a whole number").nonnegative("Stock cannot be negative"),
+  sku: z.string().min(1, "SKU is required").max(50),
+});
+
+export type ProductFormValues = z.infer<typeof productSchema>;
+export type ProductFormInput = z.input<typeof productSchema>;

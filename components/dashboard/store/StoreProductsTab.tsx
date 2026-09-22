@@ -2,22 +2,36 @@
 
 import { useState } from "react";
 import { useProducts } from "@/hooks/useProducts";
+import { type ProductFormValues } from "@/lib/validation";
 import type { ApiGallery } from "@/lib/types/models";
+import ProductModal from "@/components/dashboard/store/ProductModal";
 
 interface StoreProductsTabProps {
   gallery: ApiGallery;
 }
 
 export default function StoreProductsTab({ gallery }: StoreProductsTabProps) {
-  const { products, isLoading, error } = useProducts({ galleryId: gallery.id });
-  const [isCreating, setIsCreating] = useState(false);
+  const { products, isLoading, error, createProduct } = useProducts({ galleryId: gallery.id });
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [creationError, setCreationError] = useState<string | null>(null);
+
+  const handleCreateProduct = async (values: ProductFormValues) => {
+    try {
+      setCreationError(null);
+      await createProduct(values);
+      setIsModalOpen(false);
+    } catch (err) {
+      setCreationError(err instanceof Error ? err.message : "Failed to create product");
+      throw err;
+    }
+  };
 
   return (
     <div className="space-y-6">
       <div className="flex items-center justify-between">
         <h3 className="text-lg font-semibold text-gray-900">Productos ({products.length})</h3>
         <button
-          onClick={() => setIsCreating(!isCreating)}
+          onClick={() => setIsModalOpen(true)}
           className="inline-block bg-accent-500 px-4 py-2 text-xs font-semibold text-white hover:opacity-80"
         >
           + Agregar Producto
@@ -27,6 +41,12 @@ export default function StoreProductsTab({ gallery }: StoreProductsTabProps) {
       {error && (
         <div className="rounded-lg bg-danger-50 p-4 text-danger-700">
           <p className="text-sm">{error}</p>
+        </div>
+      )}
+
+      {creationError && (
+        <div className="rounded-lg bg-danger-50 p-4 text-danger-700">
+          <p className="text-sm">{creationError}</p>
         </div>
       )}
 
@@ -76,6 +96,13 @@ export default function StoreProductsTab({ gallery }: StoreProductsTabProps) {
           </table>
         </div>
       )}
+
+      <ProductModal
+        isOpen={isModalOpen}
+        galleryId={gallery.id}
+        onClose={() => setIsModalOpen(false)}
+        onSubmit={handleCreateProduct}
+      />
     </div>
   );
 }
