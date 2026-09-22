@@ -1,5 +1,6 @@
 import Image from "next/image";
 import AboutContactNav from "@/components/gallery-public/AboutContactNav";
+import ContactForm from "@/components/gallery-public/ContactForm";
 import { getArtistName, type ApiArtwork, type ApiGallery } from "@/lib/types/models";
 
 interface ContactPageViewProps {
@@ -23,13 +24,14 @@ export default function ContactPageView({ slug, gallery, featuredArtwork }: Cont
           <blockquote className="border-l-2 border-[color:var(--color-gallery-border)] pl-6 font-serif text-xl leading-relaxed text-[color:var(--color-gallery-fg)] md:text-2xl">
             Get in touch with {gallery.title}
           </blockquote>
-          <p className="mt-8 max-w-2xl text-sm leading-relaxed text-[color:var(--color-gallery-fg)]/70">
-            This gallery hasn&apos;t added contact details yet.
-          </p>
+
+          <div className="mt-8 max-w-2xl">
+            <ContactForm slug={slug} />
+          </div>
 
           {featuredArtwork?.imageUrl && (
             <div className="mt-12">
-              <div className="relative aspect-[16/10] w-full overflow-hidden bg-gray-100">
+              <div className="relative aspect-[16/10] w-full overflow-hidden bg-gray-100 rounded-lg">
                 <Image
                   src={featuredArtwork.imageUrl}
                   alt={featuredArtwork.title}

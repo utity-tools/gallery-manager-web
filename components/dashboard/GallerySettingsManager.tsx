@@ -8,6 +8,7 @@ import GalleryInfo from "@/components/dashboard/GalleryInfo";
 import GalleryAboutUs from "@/components/dashboard/GalleryAboutUs";
 import GalleryArtistsSettings from "@/components/dashboard/GalleryArtistsSettings";
 import GalleryArtworksSettings from "@/components/dashboard/GalleryArtworksSettings";
+import GalleryContactSettings from "@/components/dashboard/GalleryContactSettings";
 import GalleryBrandingSettings from "@/components/dashboard/gallery-settings/GalleryBrandingSettings";
 import GalleryExtendedSettings from "@/components/dashboard/gallery-settings/GalleryExtendedSettings";
 import GalleryHomeSettings from "@/components/dashboard/gallery-settings/GalleryHomeSettings";
@@ -85,9 +86,7 @@ export default function GallerySettingsManager({ slug }: GallerySettingsManagerP
                     )}
                     {activePage === "artists" && <GalleryArtistsSettings gallery={gallery} />}
                     {activePage === "artworks" && <GalleryArtworksSettings gallery={gallery} />}
-                    {activePage === "contact" && (
-                      <p className="text-sm text-gray-500">Contact page settings coming soon</p>
-                    )}
+                    {activePage === "contact" && <GalleryContactSettings gallery={gallery} />}
                   </div>
                 </div>
               </div>
