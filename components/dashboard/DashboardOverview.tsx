@@ -6,7 +6,7 @@ import { useArtworks } from "@/hooks/useArtworks";
 import { useShows } from "@/hooks/useShows";
 import Link from "next/link";
 import Image from "next/image";
-import { AlertCircle, Plus, Users, Calendar, TrendingUp } from "lucide-react";
+import { AlertCircle, Plus, Users, Calendar, TrendingUp, ShoppingBag } from "lucide-react";
 
 interface DashboardOverviewProps {
   slug: string;
@@ -124,6 +124,13 @@ export default function DashboardOverview({ slug }: DashboardOverviewProps) {
         >
           <Calendar size={16} />
           Exhibitions
+        </Link>
+        <Link
+          href="/dashboard/store"
+          className="flex items-center gap-2 rounded-lg border border-gray-200 px-4 py-2 text-gray-700 hover:bg-gray-50 text-sm font-medium"
+        >
+          <ShoppingBag size={16} />
+          Store
         </Link>
         <Link
           href="/dashboard/gallery-settings"
