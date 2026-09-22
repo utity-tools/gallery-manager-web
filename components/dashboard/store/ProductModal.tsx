@@ -3,12 +3,11 @@
 import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { productSchema, type ProductFormValues } from "@/lib/validation";
+import { productSchema, type ProductFormValues, type ProductFormInput } from "@/lib/validation";
 import type { ApiError } from "@/lib/types/models";
 
 interface ProductModalProps {
   isOpen: boolean;
-  galleryId: string;
   onClose: () => void;
   onSubmit: (values: ProductFormValues) => Promise<void>;
 }
@@ -16,7 +15,7 @@ interface ProductModalProps {
 const inputClass =
   "mt-1 w-full rounded-md border border-gray-200 bg-white px-3 py-2 text-sm text-gray-900 placeholder:text-gray-400 focus:border-accent-500 focus:outline-none focus:ring-2 focus:ring-accent-500";
 
-export default function ProductModal({ isOpen, galleryId, onClose, onSubmit }: ProductModalProps) {
+export default function ProductModal({ isOpen, onClose, onSubmit }: ProductModalProps) {
   const [formError, setFormError] = useState<string | null>(null);
 
   const {
@@ -24,7 +23,7 @@ export default function ProductModal({ isOpen, galleryId, onClose, onSubmit }: P
     handleSubmit,
     reset,
     formState: { errors, isSubmitting },
-  } = useForm<ProductFormValues>({
+  } = useForm<ProductFormInput, unknown, ProductFormValues>({
     resolver: zodResolver(productSchema),
     defaultValues: {
       title: "",

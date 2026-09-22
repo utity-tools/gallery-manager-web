@@ -99,7 +99,6 @@ export default function StoreProductsTab({ gallery }: StoreProductsTabProps) {
 
       <ProductModal
         isOpen={isModalOpen}
-        galleryId={gallery.id}
         onClose={() => setIsModalOpen(false)}
         onSubmit={handleCreateProduct}
       />
