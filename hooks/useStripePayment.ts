@@ -1,6 +1,5 @@
 import { useState } from "react";
 import { useStripe, useElements, CardElement } from "@stripe/react-stripe-js";
-import type { Stripe, StripeElements } from "@stripe/stripe-js";
 import { api } from "@/lib/api";
 
 interface PaymentInput {
@@ -23,6 +22,18 @@ interface PaymentInput {
   };
 }
 
+interface CheckoutResponse {
+  success: boolean;
+  data: {
+    orderId: string;
+    clientSecret: string;
+    totalPrice: number;
+  };
+  error?: {
+    message: string;
+  };
+}
+
 export function useStripePayment() {
   const stripe = useStripe();
   const elements = useElements();
@@ -39,43 +50,56 @@ export function useStripePayment() {
       setIsLoading(true);
       setError(null);
 
-      // Get card element
+      // Step 1: Create order and get clientSecret from backend
+      const checkoutResponse = await api.post<CheckoutResponse>(
+        `/api/public/galleries/${input.slug}/store/checkout`,
+        {
+          customerName: input.customerName,
+          customerEmail: input.customerEmail,
+          items: input.items,
+          totalPrice: input.totalPrice,
+          shippingAddress: input.shippingAddress,
+        }
+      );
+
+      if (!checkoutResponse.data.success) {
+        throw new Error(checkoutResponse.data.error?.message || "Failed to create order");
+      }
+
+      const { clientSecret, orderId } = checkoutResponse.data.data;
+
+      // Step 2: Confirm payment with Stripe
       const cardElement = elements.getElement(CardElement);
       if (!cardElement) {
         throw new Error("Card element not found");
       }
 
-      // Create payment method
-      const { error: paymentError, paymentMethod } = await stripe.createPaymentMethod({
-        type: "card",
-        card: cardElement,
-        billing_details: {
-          name: input.customerName,
-          email: input.customerEmail,
+      const { error: confirmError, paymentIntent } = await stripe.confirmCardPayment(clientSecret, {
+        payment_method: {
+          card: cardElement,
+          billing_details: {
+            name: input.customerName,
+            email: input.customerEmail,
+          },
         },
       });
 
-      if (paymentError) {
-        throw new Error(paymentError.message);
+      if (confirmError) {
+        throw new Error(confirmError.message || "Payment confirmation failed");
       }
 
-      // Create order with payment method
-      const response = await api.post(
-        `/api/public/galleries/${input.slug}/store/checkout`,
-        {
-          ...input,
-          stripePaymentMethodId: paymentMethod.id,
-        }
-      );
-
-      if (!response.data.success) {
-        throw new Error(response.data.error?.message || "Payment failed");
+      // Step 3: Verify payment succeeded
+      if (paymentIntent.status !== "succeeded") {
+        throw new Error(`Payment status: ${paymentIntent.status}`);
       }
 
       // Clear card after successful payment
       cardElement.clear();
 
-      return response.data.data;
+      return {
+        orderId,
+        success: true,
+      };
     } catch (err) {
       const errorMessage = err instanceof Error ? err.message : "Payment processing failed";
       setError(errorMessage);

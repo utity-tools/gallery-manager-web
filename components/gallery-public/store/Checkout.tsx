@@ -28,6 +28,7 @@ export default function Checkout({ slug }: CheckoutProps) {
   const { items, total, clear } = useCart();
   const { processPayment, isLoading: isPaymentLoading, error: paymentError, isReady } = useStripePayment();
   const [error, setError] = useState<string | null>(null);
+  const [success, setSuccess] = useState(false);
 
   const {
     register,
@@ -43,7 +44,9 @@ export default function Checkout({ slug }: CheckoutProps) {
       return;
     }
 
-    const order = await processPayment({
+    setError(null);
+
+    const result = await processPayment({
       slug,
       customerName: values.name,
       customerEmail: values.email,
@@ -63,14 +66,26 @@ export default function Checkout({ slug }: CheckoutProps) {
       },
     });
 
-    if (order) {
+    if (result && result.success) {
+      setSuccess(true);
       clear();
-      alert("¡Pedido confirmado! Te hemos enviado un email de confirmación.");
-      window.location.href = `/gallery/${slug}/store`;
-    } else {
-      setError(paymentError || "Failed to process order");
+      setTimeout(() => {
+        window.location.href = `/gallery/${slug}/store`;
+      }, 2000);
     }
   };
+
+  if (success) {
+    return (
+      <div className="mx-auto max-w-7xl px-4 py-16 sm:px-6 lg:px-8">
+        <div className="rounded-lg bg-success-50 p-8 text-center text-success-700">
+          <h1 className="font-serif text-3xl font-bold text-success-900">¡Pedido Confirmado!</h1>
+          <p className="mt-2">Te hemos enviado un email de confirmación.</p>
+          <p className="mt-4 text-sm text-success-600">Redirigiendo...</p>
+        </div>
+      </div>
+    );
+  }
 
   if (items.length === 0) {
     return (
