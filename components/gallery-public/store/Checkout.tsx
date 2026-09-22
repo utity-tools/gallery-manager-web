@@ -4,8 +4,9 @@ import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import * as z from "zod";
+import { CardElement } from "@stripe/react-stripe-js";
 import { useCart } from "@/hooks/useCart";
-import { api } from "@/lib/api";
+import { useStripePayment } from "@/hooks/useStripePayment";
 
 const checkoutSchema = z.object({
   name: z.string().min(1, "Name is required"),
@@ -25,7 +26,7 @@ interface CheckoutProps {
 
 export default function Checkout({ slug }: CheckoutProps) {
   const { items, total, clear } = useCart();
-  const [isSubmitting, setIsSubmitting] = useState(false);
+  const { processPayment, isLoading: isPaymentLoading, error: paymentError, isReady } = useStripePayment();
   const [error, setError] = useState<string | null>(null);
 
   const {
@@ -37,41 +38,37 @@ export default function Checkout({ slug }: CheckoutProps) {
   });
 
   const onSubmit = async (values: CheckoutFormValues) => {
-    try {
-      setIsSubmitting(true);
-      setError(null);
+    if (!isReady) {
+      setError("Stripe is not loaded. Please refresh the page.");
+      return;
+    }
 
-      // TODO: Integrar con Stripe
-      const response = await api.post(`/api/public/galleries/${slug}/store/checkout`, {
-        customerName: values.name,
-        customerEmail: values.email,
-        items: items.map((item) => ({
-          productId: item.productId,
-          quantity: item.quantity,
-          title: item.title,
-          priceAtTime: item.priceAtTime,
-          variantes: item.variantes,
-        })),
-        totalPrice: total,
-        shippingAddress: {
-          line1: values.address,
-          city: values.city,
-          postalCode: values.postalCode,
-          country: values.country,
-        },
-      });
+    const order = await processPayment({
+      slug,
+      customerName: values.name,
+      customerEmail: values.email,
+      items: items.map((item) => ({
+        productId: item.productId,
+        quantity: item.quantity,
+        title: item.title,
+        priceAtTime: item.priceAtTime,
+        variantes: item.variantes,
+      })),
+      totalPrice: total,
+      shippingAddress: {
+        line1: values.address,
+        city: values.city,
+        postalCode: values.postalCode,
+        country: values.country,
+      },
+    });
 
-      if (response.data.success) {
-        clear();
-        alert("¡Pedido confirmado! Te hemos enviado un email de confirmación.");
-        window.location.href = `/gallery/${slug}/store`;
-      } else {
-        setError(response.data.error?.message || "Failed to process order");
-      }
-    } catch (err) {
-      setError(err instanceof Error ? err.message : "Failed to process order");
-    } finally {
-      setIsSubmitting(false);
+    if (order) {
+      clear();
+      alert("¡Pedido confirmado! Te hemos enviado un email de confirmación.");
+      window.location.href = `/gallery/${slug}/store`;
+    } else {
+      setError(paymentError || "Failed to process order");
     }
   };
 
@@ -206,14 +203,42 @@ export default function Checkout({ slug }: CheckoutProps) {
             </div>
           </div>
 
-          {/* TODO: Stripe CardElement */}
+          {/* Stripe Card Input */}
+          <div className="space-y-4 border-t border-gray-200 pt-6">
+            <h3 className="text-lg font-semibold text-gray-900">Información de Pago</h3>
+
+            {(error || paymentError) && (
+              <div className="rounded-lg bg-danger-50 p-4 text-danger-700">
+                <p className="text-sm">{error || paymentError}</p>
+              </div>
+            )}
+
+            <div className="rounded-md border border-gray-300 p-4">
+              <CardElement
+                options={{
+                  style: {
+                    base: {
+                      fontSize: "14px",
+                      color: "#424770",
+                      "::placeholder": {
+                        color: "#aab7c4",
+                      },
+                    },
+                    invalid: {
+                      color: "#9e2146",
+                    },
+                  },
+                }}
+              />
+            </div>
+          </div>
 
           <button
             type="submit"
-            disabled={isSubmitting}
+            disabled={isPaymentLoading || !isReady}
             className="w-full bg-accent-500 px-6 py-3 text-sm font-semibold text-white hover:opacity-80 disabled:opacity-50 disabled:cursor-not-allowed"
           >
-            {isSubmitting ? "Procesando..." : "Completar Pedido"}
+            {isPaymentLoading ? "Procesando Pago..." : "Completar Pedido"}
           </button>
         </form>
       </div>
