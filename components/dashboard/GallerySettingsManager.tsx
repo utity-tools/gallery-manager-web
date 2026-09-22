@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useCallback } from "react";
+import { useState, useCallback, useEffect } from "react";
 import { useGallery } from "@/hooks/useGallery";
 import { useArtworks } from "@/hooks/useArtworks";
 import Tabs from "@/components/Tabs";
@@ -18,6 +18,7 @@ interface GallerySettingsManagerProps {
 interface Toast {
   id: number;
   message: string;
+  type?: 'success' | 'error';
 }
 
 const PAGES_TABS = [
@@ -32,13 +33,19 @@ export default function GallerySettingsManager({ slug }: GallerySettingsManagerP
   const [toasts, setToasts] = useState<Toast[]>([]);
   const [activePage, setActivePage] = useState("about");
   const { gallery, isLoading, error, updateGalleryData } = useGallery();
-  const { total } = useArtworks({ galleryId: gallery?.id, limit: 1 });
+  const { total, error: artworksError } = useArtworks({ galleryId: gallery?.id, limit: 1 });
 
-  const showToast = useCallback((message: string) => {
+  const showToast = useCallback((message: string, type: 'success' | 'error' = 'success') => {
     const id = Date.now();
-    setToasts((prev) => [...prev, { id, message }]);
+    setToasts((prev) => [...prev, { id, message, type }]);
     setTimeout(() => setToasts((prev) => prev.filter((t) => t.id !== id)), 4000);
   }, []);
+
+  // Surface errors as toasts immediately
+  useEffect(() => {
+    if (error) showToast(error, 'error');
+    if (artworksError) showToast(artworksError, 'error');
+  }, [error, artworksError, showToast]);
 
   const handleSave = async (input: Parameters<typeof updateGalleryData>[0]) => {
     await updateGalleryData(input);
@@ -103,7 +110,12 @@ export default function GallerySettingsManager({ slug }: GallerySettingsManagerP
 
         <div className="fixed bottom-4 right-4 z-50 flex flex-col gap-2">
           {toasts.map((toast) => (
-            <div key={toast.id} className="rounded-md bg-success-600 px-4 py-2 text-sm text-white shadow-lg">
+            <div
+              key={toast.id}
+              className={`rounded-md px-4 py-2 text-sm text-white shadow-lg ${
+                toast.type === 'error' ? 'bg-danger-600' : 'bg-success-600'
+              }`}
+            >
               {toast.message}
             </div>
           ))}
