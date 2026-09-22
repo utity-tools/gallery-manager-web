@@ -23,7 +23,7 @@ export default function SignupForm() {
   const onSubmit = async (values: SignupFormValues) => {
     setFormError(null);
     try {
-      await api.post("/auth/signup", {
+      await api.post("/api/auth/signup", {
         name: values.name,
         email: values.email,
         password: values.password,

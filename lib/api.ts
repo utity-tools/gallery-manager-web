@@ -80,7 +80,7 @@ api.interceptors.response.use(
 );
 
 export async function logout(): Promise<void> {
-  await api.post<BackendEnvelope<{ message: string }>>("/auth/logout");
+  await api.post<BackendEnvelope<{ message: string }>>("/api/auth/logout");
 }
 
 export async function getGallery(): Promise<ApiGallery> {
