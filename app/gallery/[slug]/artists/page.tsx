@@ -14,8 +14,9 @@ interface BackendEnvelope<T> {
 }
 
 interface ArtistsPageResponse {
-  artists: ApiArtist[];
+  items: ApiArtist[];
   total: number;
+  page: number;
   pages: number;
 }
 
@@ -32,8 +33,8 @@ async function getPublicArtistsPageData(
       }),
     ]);
     return {
-      artists: artistsRes.data.data.artists,
-      backgroundImageUrl: artworksRes.data.data.artworks[0]?.imageUrl ?? null,
+      artists: artistsRes.data.data.items,
+      backgroundImageUrl: artworksRes.data.data.items[0]?.imageUrl ?? null,
     };
   } catch {
     return null;

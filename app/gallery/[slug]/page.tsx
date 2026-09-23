@@ -25,7 +25,7 @@ async function getPublicGallery(
     ]);
     return {
       gallery: galleryRes.data.data,
-      artworks: artworksRes.data.data.artworks,
+      artworks: artworksRes.data.data.items,
     };
   } catch {
     return null;

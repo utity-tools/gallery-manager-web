@@ -62,8 +62,8 @@ export default function ShowModal({ isOpen, show, galleryId, onClose, onSubmit }
     Promise.all([getGalleryArtists(galleryId), getArtworks(galleryId, 1, 200)])
       .then(([artistsRes, artworksRes]) => {
         if (cancelled) return;
-        setArtists(artistsRes);
-        setArtworks(artworksRes.artworks);
+        setArtists(artistsRes.items || []);
+        setArtworks(artworksRes.items || []);
       })
       .finally(() => {
         if (!cancelled) setIsLoadingLists(false);

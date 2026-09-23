@@ -47,5 +47,5 @@ export default async function ArtworksPage({ params, searchParams }: ArtworksPag
     notFound();
   }
 
-  return <ArtworksGrid artworks={result.artworks} slug={slug} pagination={result} />;
+  return <ArtworksGrid artworks={result.items} slug={slug} pagination={result} />;
 }
