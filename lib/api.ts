@@ -14,6 +14,11 @@ import type {
   ShowDetail,
   ShowInput,
 } from "@/lib/types/models";
+import type {
+  ApiProduct,
+  ApiOrder,
+  CreateProductInput,
+} from "@/lib/types/store";
 
 interface BackendEnvelope<T> {
   success: boolean;
@@ -211,6 +216,72 @@ export async function uploadImage(file: File, galleryId: string): Promise<string
   });
 
   return data.data.url;
+}
+
+export async function getProducts(
+  galleryId: string,
+  page = 1,
+  limit = 12
+): Promise<PaginatedResponse<ApiProduct>> {
+  const { data } = await api.get<BackendEnvelope<PaginatedResponse<ApiProduct>>>(
+    `/galleries/${galleryId}/products`,
+    { params: { page, limit } }
+  );
+  return data.data;
+}
+
+export async function createProduct(
+  galleryId: string,
+  input: CreateProductInput
+): Promise<ApiProduct> {
+  const { data } = await api.post<BackendEnvelope<ApiProduct>>(
+    `/galleries/${galleryId}/products`,
+    input
+  );
+  return data.data;
+}
+
+export async function updateProduct(
+  galleryId: string,
+  productId: string,
+  input: Partial<CreateProductInput>
+): Promise<ApiProduct> {
+  const { data } = await api.put<BackendEnvelope<ApiProduct>>(
+    `/galleries/${galleryId}/products/${productId}`,
+    input
+  );
+  return data.data;
+}
+
+export async function deleteProduct(
+  galleryId: string,
+  productId: string
+): Promise<void> {
+  await api.delete(`/galleries/${galleryId}/products/${productId}`);
+}
+
+export async function getOrders(
+  galleryId: string,
+  page = 1,
+  limit = 12
+): Promise<PaginatedResponse<ApiOrder>> {
+  const { data } = await api.get<BackendEnvelope<PaginatedResponse<ApiOrder>>>(
+    `/galleries/${galleryId}/orders`,
+    { params: { page, limit } }
+  );
+  return data.data;
+}
+
+export async function updateOrderStatus(
+  galleryId: string,
+  orderId: string,
+  status: "processing" | "shipped" | "delivered"
+): Promise<ApiOrder> {
+  const { data } = await api.put<BackendEnvelope<ApiOrder>>(
+    `/galleries/${galleryId}/orders/${orderId}`,
+    { orderStatus: status }
+  );
+  return data.data;
 }
 
 export default api;

@@ -58,7 +58,7 @@ export function useShows({ galleryId, page = 1, limit = 12 }: UseShowsOptions = 
     return () => {
       cancelled = true;
     };
-  }, [session?.user?.id, galleryId, limit]);
+  }, [session?.user?.id, galleryId, page, limit]);
 
   useEffect(() => {
     const start = (page - 1) * limit;

@@ -37,7 +37,7 @@ export function useArtists({ galleryId, page = 1, limit = 12 }: UseArtistsOption
   useEffect(() => {
     if (!session?.user?.id || !galleryId) return;
     fetchArtists();
-  }, [session?.user?.id, galleryId, fetchArtists]);
+  }, [session?.user?.id, galleryId, page, limit]);
 
   useEffect(() => {
     const start = (page - 1) * limit;

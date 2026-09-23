@@ -11,14 +11,14 @@ interface StoreProductsTabProps {
 }
 
 export default function StoreProductsTab({ gallery }: StoreProductsTabProps) {
-  const { products, isLoading, error, createProduct } = useProducts({ galleryId: gallery.id });
+  const { products, isLoading, error, addProduct } = useProducts({ galleryId: gallery.id });
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [creationError, setCreationError] = useState<string | null>(null);
 
   const handleCreateProduct = async (values: ProductFormValues) => {
     try {
       setCreationError(null);
-      await createProduct(values);
+      await addProduct(values);
       setIsModalOpen(false);
     } catch (err) {
       setCreationError(err instanceof Error ? err.message : "Failed to create product");

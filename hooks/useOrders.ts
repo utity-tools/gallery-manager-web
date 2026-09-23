@@ -1,49 +1,61 @@
 import { useCallback, useEffect, useState } from "react";
 import { useSession } from "next-auth/react";
-import { api } from "@/lib/api";
+import { getOrders, updateOrderStatus } from "@/lib/api";
 import type { ApiOrder } from "@/lib/types/store";
 
 interface UseOrdersOptions {
   galleryId?: string;
+  page?: number;
+  limit?: number;
 }
 
-export function useOrders({ galleryId }: UseOrdersOptions = {}) {
+export function useOrders({
+  galleryId,
+  page = 1,
+  limit = 12,
+}: UseOrdersOptions = {}) {
   const { data: session } = useSession();
   const [orders, setOrders] = useState<ApiOrder[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [total, setTotal] = useState(0);
+  const [totalPages, setTotalPages] = useState(0);
 
   const fetchOrders = useCallback(async () => {
     if (!galleryId) return;
     try {
       setIsLoading(true);
       setError(null);
-      const response = await api.get<{ success: boolean; data: { items: ApiOrder[] } }>(
-        `/galleries/${galleryId}/orders`
-      );
-      setOrders(response.data.data?.items || []);
+      const result = await getOrders(galleryId, page, limit);
+      setOrders(result.items || []);
+      setTotal(result.total);
+      setTotalPages(result.pages);
     } catch (err) {
-      setError(err instanceof Error ? err.message : "Failed to load orders");
+      const message =
+        err instanceof Error ? err.message : "Failed to load orders";
+      setError(message);
+      setOrders([]);
     } finally {
       setIsLoading(false);
     }
-  }, [galleryId]);
+  }, [galleryId, page, limit]);
 
   useEffect(() => {
     if (!session?.user?.id || !galleryId) return;
     fetchOrders();
-  }, [session?.user?.id, galleryId, fetchOrders]);
+  }, [session?.user?.id, galleryId, page, limit]);
 
-  const updateOrderStatus = useCallback(
-    async (orderId: string, status: "processing" | "shipped" | "delivered") => {
+  const updateStatus = useCallback(
+    async (
+      orderId: string,
+      status: "processing" | "shipped" | "delivered"
+    ) => {
       if (!galleryId) throw new Error("Gallery not found");
       try {
-        const response = await api.put<{ success: boolean; data: ApiOrder }>(
-          `/galleries/${galleryId}/orders/${orderId}`,
-          { orderStatus: status }
+        const updated = await updateOrderStatus(galleryId, orderId, status);
+        setOrders((prev) =>
+          prev.map((o) => (o.id === orderId ? updated : o))
         );
-        const updated = response.data.data;
-        setOrders((prev) => prev.map((o) => (o.id === orderId ? updated : o)));
         return updated;
       } catch (err) {
         throw err instanceof Error ? err : new Error("Failed to update order");
@@ -56,7 +68,9 @@ export function useOrders({ galleryId }: UseOrdersOptions = {}) {
     orders,
     isLoading,
     error,
-    updateOrderStatus,
+    total,
+    totalPages,
+    updateOrderStatus: updateStatus,
     mutate: fetchOrders,
   };
 }
