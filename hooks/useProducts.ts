@@ -19,11 +19,11 @@ export function useProducts({ galleryId, category }: UseProductsOptions = {}) {
     try {
       setIsLoading(true);
       setError(null);
-      const response = await api.get<{ success: boolean; data: ApiProduct[] }>(
+      const response = await api.get<{ success: boolean; data: { items: ApiProduct[] } }>(
         `/galleries/${galleryId}/products`,
         { params: { ...(category && { category }) } }
       );
-      setProducts(response.data.data || []);
+      setProducts(response.data.data?.items || []);
     } catch (err) {
       setError(err instanceof Error ? err.message : "Failed to load products");
     } finally {

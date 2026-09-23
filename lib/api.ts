@@ -10,6 +10,7 @@ import type {
   ArtworkInput,
   ArtworksPage,
   GalleryInput,
+  PaginatedResponse,
   ShowDetail,
   ShowInput,
 } from "@/lib/types/models";
@@ -105,8 +106,8 @@ export async function getArtworks(
   return data.data;
 }
 
-export async function getGalleryArtists(galleryId: string): Promise<ApiArtist[]> {
-  const { data } = await api.get<BackendEnvelope<ApiArtist[]>>(
+export async function getGalleryArtists(galleryId: string): Promise<PaginatedResponse<ApiArtist>> {
+  const { data } = await api.get<BackendEnvelope<PaginatedResponse<ApiArtist>>>(
     `/galleries/${galleryId}/artists`
   );
   return data.data;
@@ -164,8 +165,8 @@ export async function deleteArtwork(id: string): Promise<void> {
   await api.delete(`/artworks/${id}`);
 }
 
-export async function getShows(galleryId: string): Promise<ApiShow[]> {
-  const { data } = await api.get<BackendEnvelope<ApiShow[]>>(`/galleries/${galleryId}/shows`);
+export async function getShows(galleryId: string): Promise<PaginatedResponse<ApiShow>> {
+  const { data } = await api.get<BackendEnvelope<PaginatedResponse<ApiShow>>>(`/galleries/${galleryId}/shows`);
   return data.data;
 }
 

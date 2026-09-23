@@ -40,9 +40,9 @@ export function useShows({ galleryId, page = 1, limit = 12 }: UseShowsOptions = 
         setError(null);
         const result = await getShows(galleryId);
         if (!cancelled) {
-          setAllShows(result);
-          setTotal(result.length);
-          setTotalPages(Math.ceil(result.length / limit));
+          setAllShows(result.items || []);
+          setTotal(result.total);
+          setTotalPages(result.pages);
         }
       } catch (err) {
         if (!cancelled) {

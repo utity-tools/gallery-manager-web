@@ -23,10 +23,10 @@ export function useArtists({ galleryId, page = 1, limit = 12 }: UseArtistsOption
     try {
       setIsLoading(true);
       setError(null);
-      const data = await getGalleryArtists(galleryId);
-      setAllArtists(data);
-      setTotal(data.length);
-      setTotalPages(Math.ceil(data.length / limit));
+      const result = await getGalleryArtists(galleryId);
+      setAllArtists(result.items || []);
+      setTotal(result.total);
+      setTotalPages(result.pages);
     } catch (err) {
       setError(err instanceof Error ? err.message : "Failed to load artists");
     } finally {

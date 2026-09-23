@@ -29,7 +29,7 @@ export function useArtworks({ galleryId, page = 1, limit = 12 }: UseArtworksOpti
         setError(null);
         const result = await getArtworks(galleryId, page, limit);
         if (!cancelled) {
-          setArtworks(result.artworks);
+          setArtworks(result.items || []);
           setTotal(result.total);
           setTotalPages(result.pages);
         }

@@ -18,10 +18,10 @@ export function useOrders({ galleryId }: UseOrdersOptions = {}) {
     try {
       setIsLoading(true);
       setError(null);
-      const response = await api.get<{ success: boolean; data: ApiOrder[] }>(
-        `/api/galleries/${galleryId}/orders`
+      const response = await api.get<{ success: boolean; data: { items: ApiOrder[] } }>(
+        `/galleries/${galleryId}/orders`
       );
-      setOrders(response.data.data || []);
+      setOrders(response.data.data?.items || []);
     } catch (err) {
       setError(err instanceof Error ? err.message : "Failed to load orders");
     } finally {
@@ -39,7 +39,7 @@ export function useOrders({ galleryId }: UseOrdersOptions = {}) {
       if (!galleryId) throw new Error("Gallery not found");
       try {
         const response = await api.put<{ success: boolean; data: ApiOrder }>(
-          `/api/galleries/${galleryId}/orders/${orderId}`,
+          `/galleries/${galleryId}/orders/${orderId}`,
           { orderStatus: status }
         );
         const updated = response.data.data;

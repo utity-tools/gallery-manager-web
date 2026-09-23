@@ -52,7 +52,7 @@ export function useStripePayment() {
 
       // Step 1: Create order and get clientSecret from backend
       const checkoutResponse = await api.post<CheckoutResponse>(
-        `/api/public/galleries/${input.slug}/store/checkout`,
+        `/public/galleries/${input.slug}/store/checkout`,
         {
           customerName: input.customerName,
           customerEmail: input.customerEmail,

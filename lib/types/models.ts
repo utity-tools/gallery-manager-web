@@ -180,12 +180,14 @@ export interface ArtworkInput {
 
 export type GalleryInput = Partial<Omit<ApiGallery, 'id' | 'userId' | 'createdAt' | 'updatedAt'>>;
 
-export interface ArtworksPage {
-  artworks: ApiArtwork[];
+export interface PaginatedResponse<T> {
+  items: T[];
   total: number;
   page: number;
   pages: number;
 }
+
+export type ArtworksPage = PaginatedResponse<ApiArtwork>;
 
 export interface ApiError {
   message: string;
