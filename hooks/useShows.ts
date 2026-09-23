@@ -48,7 +48,7 @@ export function useShows({ galleryId, page = 1, limit = 12 }: UseShowsOptions = 
   useEffect(() => {
     if (!session?.user?.id || !galleryId) return;
     fetchShows();
-  }, [session?.user?.id, galleryId, page, limit, fetchShows]);
+  }, [session?.user?.id, galleryId, page, limit]);
 
   useEffect(() => {
     const start = (page - 1) * limit;

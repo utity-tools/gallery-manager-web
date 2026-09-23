@@ -17,7 +17,7 @@ interface BackendEnvelope<T> {
 async function getPublicProducts(slug: string): Promise<ApiProduct[] | null> {
   try {
     const res = await api.get<BackendEnvelope<PaginatedResponse<ApiProduct>>>(
-      `/public/galleries/${slug}/products`,
+      `/public/galleries/${slug}/store`,
       { params: { limit: 100 } }
     );
     return res.data.data?.items || [];
