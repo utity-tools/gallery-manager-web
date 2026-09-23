@@ -4,7 +4,8 @@ import Link from "next/link";
 import Image from "next/image";
 import { useEffect, useState } from "react";
 import { usePathname } from "next/navigation";
-import { Search, MapPin, Menu, X } from "lucide-react";
+import { Search, MapPin, Menu, X, ShoppingCart } from "lucide-react";
+import { useCart } from "@/hooks/useCart";
 import type { ApiGallery } from "@/lib/types/models";
 
 interface NavbarProps {
@@ -24,6 +25,7 @@ export default function Navbar({ slug, gallery }: NavbarProps) {
   const [mobileOpen, setMobileOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
   const pathname = usePathname();
+  const { items } = useCart();
   const hasTransparentHero =
     pathname === `/gallery/${slug}` ||
     pathname === `/gallery/${slug}/artists` ||
@@ -113,6 +115,14 @@ export default function Navbar({ slug, gallery }: NavbarProps) {
           </a>
           <Link href={`/gallery/${slug}/contact`} aria-label="Location" className="transition-opacity hover:opacity-60">
             <MapPin size={18} strokeWidth={1.5} />
+          </Link>
+          <Link href={`/gallery/${slug}/checkout`} aria-label="Shopping cart" className="relative transition-opacity hover:opacity-60">
+            <ShoppingCart size={18} strokeWidth={1.5} />
+            {items.length > 0 && (
+              <span className="absolute -right-2 -top-2 inline-flex h-5 w-5 items-center justify-center rounded-full bg-accent-500 text-xs font-semibold text-white">
+                {items.length}
+              </span>
+            )}
           </Link>
         </div>
 
