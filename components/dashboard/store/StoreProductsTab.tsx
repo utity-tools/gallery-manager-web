@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import { Plus } from "lucide-react";
 import { useProducts } from "@/hooks/useProducts";
 import { type ProductFormValues } from "@/lib/validation";
 import type { ApiGallery } from "@/lib/types/models";
@@ -11,7 +12,7 @@ interface StoreProductsTabProps {
 }
 
 export default function StoreProductsTab({ gallery }: StoreProductsTabProps) {
-  const { products, isLoading, error, addProduct } = useProducts({ galleryId: gallery.id });
+  const { products, isLoading, error, addProduct, deleteProduct } = useProducts({ galleryId: gallery.id });
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [creationError, setCreationError] = useState<string | null>(null);
 
@@ -32,9 +33,10 @@ export default function StoreProductsTab({ gallery }: StoreProductsTabProps) {
         <h3 className="text-lg font-semibold text-gray-900">Productos ({products.length})</h3>
         <button
           onClick={() => setIsModalOpen(true)}
-          className="inline-block bg-accent-500 px-4 py-2 text-xs font-semibold text-white hover:opacity-80"
+          className="flex items-center gap-2 rounded-lg bg-accent-500 px-4 py-2 text-white hover:bg-accent-600 text-sm font-medium"
         >
-          + Agregar Producto
+          <Plus size={16} />
+          Agregar Producto
         </button>
       </div>
 
@@ -86,9 +88,29 @@ export default function StoreProductsTab({ gallery }: StoreProductsTabProps) {
                   </td>
                   <td className="px-4 py-3 font-mono text-xs text-gray-600">{product.sku}</td>
                   <td className="px-4 py-3 text-right">
-                    <button className="text-xs text-accent-600 hover:text-accent-700">Editar</button>
+                    <button
+                      onClick={() => {
+                        // TODO: Implement edit functionality
+                      }}
+                      className="text-xs text-accent-600 hover:text-accent-700 disabled:opacity-50"
+                    >
+                      Editar
+                    </button>
                     <span className="mx-2 text-gray-300">|</span>
-                    <button className="text-xs text-danger-600 hover:text-danger-700">Eliminar</button>
+                    <button
+                      onClick={async () => {
+                        if (confirm(`¿Eliminar ${product.title}?`)) {
+                          try {
+                            await deleteProduct(product.id);
+                          } catch {
+                            alert("Error al eliminar");
+                          }
+                        }
+                      }}
+                      className="text-xs text-danger-600 hover:text-danger-700 disabled:opacity-50"
+                    >
+                      Eliminar
+                    </button>
                   </td>
                 </tr>
               ))}
