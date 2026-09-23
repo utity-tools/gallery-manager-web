@@ -34,15 +34,15 @@ export default function StoreGrid({ slug, products = [] }: StoreGridProps) {
       <div className="grid gap-8 lg:grid-cols-4">
         {/* Sidebar Filters */}
         <div className="lg:col-span-1">
-          <div className="space-y-6 rounded-lg border border-gray-200 bg-gray-50 p-4">
+          <div className="space-y-6 rounded-lg border border-[color:var(--color-gallery-border)] bg-[color:var(--color-gallery-bg)] p-4">
             {/* Categories */}
             <div>
-              <h3 className="mb-3 text-sm font-semibold text-gray-900">Categoría</h3>
+              <h3 className="mb-3 text-sm font-semibold text-[color:var(--color-gallery-fg)]">Categoría</h3>
               <div className="space-y-2">
                 <button
                   onClick={() => setSelectedCategory(null)}
-                  className={`block w-full text-left text-xs ${
-                    selectedCategory === null ? "font-semibold text-accent-500" : "text-gray-600"
+                  className={`block w-full text-left text-xs transition-colors ${
+                    selectedCategory === null ? "font-semibold text-accent-500" : "text-[color:var(--color-gallery-fg)]/70 hover:text-[color:var(--color-gallery-fg)]"
                   }`}
                 >
                   Todas
@@ -51,8 +51,8 @@ export default function StoreGrid({ slug, products = [] }: StoreGridProps) {
                   <button
                     key={cat}
                     onClick={() => setSelectedCategory(cat)}
-                    className={`block w-full text-left text-xs ${
-                      selectedCategory === cat ? "font-semibold text-accent-500" : "text-gray-600"
+                    className={`block w-full text-left text-xs transition-colors ${
+                      selectedCategory === cat ? "font-semibold text-accent-500" : "text-[color:var(--color-gallery-fg)]/70 hover:text-[color:var(--color-gallery-fg)]"
                     }`}
                   >
                     {cat.charAt(0).toUpperCase() + cat.slice(1)}
@@ -63,7 +63,7 @@ export default function StoreGrid({ slug, products = [] }: StoreGridProps) {
 
             {/* Price Range */}
             <div>
-              <h3 className="mb-3 text-sm font-semibold text-gray-900">Precio</h3>
+              <h3 className="mb-3 text-sm font-semibold text-[color:var(--color-gallery-fg)]">Precio</h3>
               <div className="space-y-2">
                 <input
                   type="range"
@@ -71,7 +71,7 @@ export default function StoreGrid({ slug, products = [] }: StoreGridProps) {
                   max="1000"
                   value={priceRange[0]}
                   onChange={(e) => setPriceRange([Number(e.target.value), priceRange[1]])}
-                  className="w-full"
+                  className="w-full accent-accent-500"
                 />
                 <input
                   type="range"
@@ -79,9 +79,9 @@ export default function StoreGrid({ slug, products = [] }: StoreGridProps) {
                   max="1000"
                   value={priceRange[1]}
                   onChange={(e) => setPriceRange([priceRange[0], Number(e.target.value)])}
-                  className="w-full"
+                  className="w-full accent-accent-500"
                 />
-                <p className="text-xs text-gray-600">
+                <p className="text-xs text-[color:var(--color-gallery-fg)]/70">
                   €{priceRange[0]} - €{priceRange[1]}
                 </p>
               </div>
@@ -92,7 +92,7 @@ export default function StoreGrid({ slug, products = [] }: StoreGridProps) {
         {/* Products Grid */}
         <div className="lg:col-span-3">
           {filtered.length === 0 ? (
-            <div className="rounded-lg border border-gray-200 p-12 text-center text-gray-500">
+            <div className="rounded-lg border border-[color:var(--color-gallery-border)] p-12 text-center text-[color:var(--color-gallery-fg)]/60">
               <p>No hay productos disponibles con estos filtros</p>
             </div>
           ) : (
