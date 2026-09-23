@@ -105,9 +105,8 @@ export default function StoreProductsTab({ gallery }: StoreProductsTabProps) {
                   <td className="px-4 py-3 font-mono text-xs text-gray-600">{product.sku}</td>
                   <td className="px-4 py-3 text-right">
                     <button
-                      disabled
-                      className="text-xs text-gray-400 cursor-not-allowed"
-                      title="Edit functionality coming soon"
+                      onClick={() => setIsModalOpen(true)}
+                      className="text-xs text-accent-600 hover:text-accent-700"
                     >
                       Editar
                     </button>
