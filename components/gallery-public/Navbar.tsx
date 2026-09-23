@@ -15,6 +15,7 @@ interface NavbarProps {
 const links = (slug: string) => [
   { href: `/gallery/${slug}/artists`, label: "ARTISTS" },
   { href: `/gallery/${slug}/exhibitions`, label: "EXHIBITIONS" },
+  { href: `/gallery/${slug}/store`, label: "STORE" },
   { href: `/gallery/${slug}/about`, label: "ABOUT" },
   { href: `/gallery/${slug}/contact`, label: "CONTACT" },
 ];
