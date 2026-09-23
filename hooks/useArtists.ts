@@ -32,7 +32,7 @@ export function useArtists({ galleryId, page = 1, limit = 12 }: UseArtistsOption
     } finally {
       setIsLoading(false);
     }
-  }, [galleryId, limit]);
+  }, [galleryId, page, limit]);
 
   useEffect(() => {
     if (!session?.user?.id || !galleryId) return;

@@ -49,7 +49,7 @@ export default function ArtistsClient({ slug }: ArtistsClientProps) {
     addArtist,
     updateArtist,
     deleteArtist,
-  } = useArtists({ galleryId: gallery?.id, page: currentPage });
+  } = useArtists({ galleryId: gallery?.id, page: currentPage, limit: 12 });
 
   const filteredArtists = useMemo(() => {
     const query = search.trim().toLowerCase();
