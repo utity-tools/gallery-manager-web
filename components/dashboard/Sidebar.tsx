@@ -12,6 +12,7 @@ import {
   LogOut,
   Users,
   Calendar,
+  ShoppingBag,
   PanelLeftClose,
   PanelLeft,
 } from "lucide-react";
@@ -41,6 +42,7 @@ export default function Sidebar({
     { href: "/dashboard/artworks", label: "Artworks", icon: ImageIcon },
     { href: "/dashboard/artists", label: "Artists", icon: Users },
     { href: "/dashboard/shows", label: "Exhibitions", icon: Calendar },
+    { href: "/dashboard/store", label: "Store", icon: ShoppingBag },
     { href: "/dashboard/gallery-settings", label: "Gallery Settings", icon: SlidersHorizontal },
     { href: `/gallery/${slug}`, label: "Public Preview", icon: Eye, external: true },
     { href: "/dashboard/settings", label: "Settings", icon: Settings },
