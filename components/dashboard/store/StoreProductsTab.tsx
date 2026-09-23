@@ -5,6 +5,7 @@ import { Plus } from "lucide-react";
 import { useProducts } from "@/hooks/useProducts";
 import { type ProductFormValues } from "@/lib/validation";
 import type { ApiGallery } from "@/lib/types/models";
+import type { ApiProduct as StoreProduct } from "@/lib/types/store";
 import ProductModal from "@/components/dashboard/store/ProductModal";
 
 interface StoreProductsTabProps {
@@ -14,6 +15,8 @@ interface StoreProductsTabProps {
 export default function StoreProductsTab({ gallery }: StoreProductsTabProps) {
   const { products, isLoading, error, addProduct, deleteProduct } = useProducts({ galleryId: gallery.id });
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [deleteTarget, setDeleteTarget] = useState<StoreProduct | null>(null);
+  const [isDeleting, setIsDeleting] = useState(false);
   const [creationError, setCreationError] = useState<string | null>(null);
 
   const handleCreateProduct = async (values: ProductFormValues) => {
@@ -24,6 +27,19 @@ export default function StoreProductsTab({ gallery }: StoreProductsTabProps) {
     } catch (err) {
       setCreationError(err instanceof Error ? err.message : "Failed to create product");
       throw err;
+    }
+  };
+
+  const handleDeleteConfirm = async () => {
+    if (!deleteTarget) return;
+    setIsDeleting(true);
+    try {
+      await deleteProduct(deleteTarget.id);
+      setDeleteTarget(null);
+    } catch (err) {
+      setCreationError(err instanceof Error ? err.message : "Error al eliminar");
+    } finally {
+      setIsDeleting(false);
     }
   };
 
@@ -89,25 +105,16 @@ export default function StoreProductsTab({ gallery }: StoreProductsTabProps) {
                   <td className="px-4 py-3 font-mono text-xs text-gray-600">{product.sku}</td>
                   <td className="px-4 py-3 text-right">
                     <button
-                      onClick={() => {
-                        // TODO: Implement edit functionality
-                      }}
-                      className="text-xs text-accent-600 hover:text-accent-700 disabled:opacity-50"
+                      disabled
+                      className="text-xs text-gray-400 cursor-not-allowed"
+                      title="Edit functionality coming soon"
                     >
                       Editar
                     </button>
                     <span className="mx-2 text-gray-300">|</span>
                     <button
-                      onClick={async () => {
-                        if (confirm(`¿Eliminar ${product.title}?`)) {
-                          try {
-                            await deleteProduct(product.id);
-                          } catch {
-                            alert("Error al eliminar");
-                          }
-                        }
-                      }}
-                      className="text-xs text-danger-600 hover:text-danger-700 disabled:opacity-50"
+                      onClick={() => setDeleteTarget(product)}
+                      className="text-xs text-danger-600 hover:text-danger-700"
                     >
                       Eliminar
                     </button>
@@ -124,6 +131,33 @@ export default function StoreProductsTab({ gallery }: StoreProductsTabProps) {
         onClose={() => setIsModalOpen(false)}
         onSubmit={handleCreateProduct}
       />
+
+      {deleteTarget && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50">
+          <div className="w-full max-w-sm rounded-lg bg-white p-6">
+            <h3 className="text-lg font-semibold text-gray-900">Eliminar producto</h3>
+            <p className="mt-2 text-sm text-gray-600">
+              ¿Está seguro que desea eliminar <strong>{deleteTarget.title}</strong>?
+            </p>
+            <div className="mt-6 flex gap-3">
+              <button
+                onClick={() => setDeleteTarget(null)}
+                disabled={isDeleting}
+                className="flex-1 rounded-lg border border-gray-300 px-4 py-2 text-sm font-medium text-gray-700 hover:bg-gray-50 disabled:opacity-50"
+              >
+                Cancelar
+              </button>
+              <button
+                onClick={handleDeleteConfirm}
+                disabled={isDeleting}
+                className="flex-1 rounded-lg bg-danger-600 px-4 py-2 text-sm font-medium text-white hover:bg-danger-700 disabled:opacity-50"
+              >
+                {isDeleting ? "Eliminando..." : "Eliminar"}
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }
