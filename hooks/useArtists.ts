@@ -23,7 +23,7 @@ export function useArtists({ galleryId, page = 1, limit = 12 }: UseArtistsOption
     try {
       setIsLoading(true);
       setError(null);
-      const result = await getGalleryArtists(galleryId);
+      const result = await getGalleryArtists(galleryId, page, limit);
       setAllArtists(result.items || []);
       setTotal(result.total);
       setTotalPages(result.pages);

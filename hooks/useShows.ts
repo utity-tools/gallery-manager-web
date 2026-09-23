@@ -29,36 +29,26 @@ export function useShows({ galleryId, page = 1, limit = 12 }: UseShowsOptions = 
   const [total, setTotal] = useState(0);
   const [totalPages, setTotalPages] = useState(0);
 
+  const fetchShows = useCallback(async () => {
+    if (!galleryId) return;
+    try {
+      setIsLoading(true);
+      setError(null);
+      const result = await getShows(galleryId, page, limit);
+      setAllShows(result.items || []);
+      setTotal(result.total);
+      setTotalPages(result.pages);
+    } catch (err) {
+      setError(err instanceof Error ? err.message : "Failed to load exhibitions");
+    } finally {
+      setIsLoading(false);
+    }
+  }, [galleryId, page, limit]);
+
   useEffect(() => {
     if (!session?.user?.id || !galleryId) return;
-
-    let cancelled = false;
-
-    const fetchShows = async () => {
-      try {
-        setIsLoading(true);
-        setError(null);
-        const result = await getShows(galleryId);
-        if (!cancelled) {
-          setAllShows(result.items || []);
-          setTotal(result.total);
-          setTotalPages(result.pages);
-        }
-      } catch (err) {
-        if (!cancelled) {
-          setError(err instanceof Error ? err.message : "Failed to load exhibitions");
-        }
-      } finally {
-        if (!cancelled) setIsLoading(false);
-      }
-    };
-
     fetchShows();
-
-    return () => {
-      cancelled = true;
-    };
-  }, [session?.user?.id, galleryId, page, limit]);
+  }, [session?.user?.id, galleryId, page, limit, fetchShows]);
 
   useEffect(() => {
     const start = (page - 1) * limit;
@@ -90,5 +80,5 @@ export function useShows({ galleryId, page = 1, limit = 12 }: UseShowsOptions = 
     setTotal((prev) => Math.max(0, prev - 1));
   }, []);
 
-  return { shows, isLoading, error, total, totalPages, add, update, remove };
+  return { shows, isLoading, error, total, totalPages, add, update, remove, mutate: fetchShows };
 }

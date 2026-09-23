@@ -111,9 +111,14 @@ export async function getArtworks(
   return data.data;
 }
 
-export async function getGalleryArtists(galleryId: string): Promise<PaginatedResponse<ApiArtist>> {
+export async function getGalleryArtists(
+  galleryId: string,
+  page = 1,
+  limit = 12
+): Promise<PaginatedResponse<ApiArtist>> {
   const { data } = await api.get<BackendEnvelope<PaginatedResponse<ApiArtist>>>(
-    `/galleries/${galleryId}/artists`
+    `/galleries/${galleryId}/artists`,
+    { params: { page, limit } }
   );
   return data.data;
 }
@@ -170,8 +175,15 @@ export async function deleteArtwork(id: string): Promise<void> {
   await api.delete(`/artworks/${id}`);
 }
 
-export async function getShows(galleryId: string): Promise<PaginatedResponse<ApiShow>> {
-  const { data } = await api.get<BackendEnvelope<PaginatedResponse<ApiShow>>>(`/galleries/${galleryId}/shows`);
+export async function getShows(
+  galleryId: string,
+  page = 1,
+  limit = 12
+): Promise<PaginatedResponse<ApiShow>> {
+  const { data } = await api.get<BackendEnvelope<PaginatedResponse<ApiShow>>>(
+    `/galleries/${galleryId}/shows`,
+    { params: { page, limit } }
+  );
   return data.data;
 }
 
